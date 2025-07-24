@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package hello;
+
+// Specifies the Go package path for generated code.
+option go_package = "github.com/ghdrope/boilerplate-webapp/grpc/gen/hello";
+
+// HelloService defines a simple RPC service with one method: SayHello.
+service HelloService {
+    // SayHello returns a greeting for the given name.
+    rpc SayHello (HelloRequest) returns (HelloResponse);
+}
+
+// HelloRequest contains the name of the person to greet.
+message HelloRequest {
+    string name = 1;
+}
+
+// HelloResponse contains the greeting message returned by the server.
+message HelloResponse {
+    string message = 1;
+}
