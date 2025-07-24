@@ -1,0 +1,28 @@
+frontend:
+  image:
+    tag: dev
+  replicaCount: 1
+  service:
+    type: NodePort
+  ingress:
+    enabled: false
+    hosts:
+      - host: frontend.localhost
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []  # Normalmente sem TLS em dev/local
+
+backend:
+  image:
+    tag: dev
+  replicaCount: 1
+  service:
+    type: NodePort
+
+grpc:
+  image:
+    tag: dev
+  replicaCount: 1
+  service:
+    type: NodePort

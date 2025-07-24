@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  # Optional: Add annotations for service mesh, monitoring, etc.
+spec:
+  type: {{ .Values.frontend.service.type }} # Service type
+  selector:
+    app: frontend # Must match the Deployment's pod label
+  ports:
+    - port: {{ .Values.frontend.service.port }} # Service port exposed internally
+      targetPort: {{ .Values.frontend.service.port }} # Maps to the container's port

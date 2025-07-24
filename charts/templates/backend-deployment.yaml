@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  # Optionally, add labels or annotations for observability/tracking
+spec:
+  replicas: {{ .Values.backend.replicaCount }}   # Number of backend pod replicas
+  selector:
+    matchLabels:
+      app: backend      # Must match the pod template label
+  template:
+    metadata:
+      labels:
+        app: backend    # Label used for service discovery
+    spec:
+      containers:
+      - name: backend
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        imagePullPolicy: IfNotPresent   # Avoids unnecessary pulls if image exists locally
+        ports:
+        - containerPort: {{ .Values.backend.service.port }}   # Exposes internal container port
