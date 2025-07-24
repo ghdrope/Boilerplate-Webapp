@@ -1,0 +1,30 @@
+name: Docker Backend
+
+# Trigger on feature branches push or PR affecting backend or its Dockerfile
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/backend.dockerfile'
+      - 'backend/**'
+    
+  pull_request:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/backend.dockerfile'
+      - 'backend/**'
+  
+jobs:
+  call-docker:
+    # Reuses shared docker build workflow for feat
+    uses: ./.github/workflows/template_feat_docker.yml
+    with:
+      dockerfile: docker/backend.dockerfile
+      context: .
+      name: backend

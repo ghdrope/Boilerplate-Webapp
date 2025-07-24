@@ -1,0 +1,19 @@
+name: Dev Frontend
+
+# Trigger only on push to development branch (development workflow)
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'frontend/**'
+      - 'docker/frontend.dockerfile'
+
+jobs:
+  call-prod:
+    # Calls a production-specific reusable workflow
+    uses: ./.github/workflows/template_dev.yml
+    with:
+      context: .
+      dockerfile: docker/frontend.dockerfile
+      image_name: frontend

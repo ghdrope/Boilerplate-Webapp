@@ -1,0 +1,30 @@
+name: Docker gRPC
+
+# Trigger on feature branches push or PR affecting gRPC or its Dockerfile, excluding `latest`
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/grpc.dockerfile'
+      - 'grpc/**'
+    
+  pull_request:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/grpc.dockerfile'
+      - 'grpc/**'
+  
+jobs:
+  call-docker:
+    # Reuses shared docker build workflow for feat
+    uses: ./.github/workflows/template_feat_docker.yml
+    with:
+      dockerfile: docker/grpc.dockerfile
+      context: .
+      name: grpc

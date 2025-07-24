@@ -1,0 +1,16 @@
+name: Rel gRPC
+
+# Trigger only on push to `release-*.*.*` branches (release workflow)
+on:
+  push:
+    branches:
+      - 'release-*.*.*'
+
+jobs:
+  call-prod:
+    # Calls a production-specific reusable workflow
+    uses: ./.github/workflows/template_rel.yml
+    with:
+      context: .
+      dockerfile: docker/grpc.dockerfile
+      image_name: grpc

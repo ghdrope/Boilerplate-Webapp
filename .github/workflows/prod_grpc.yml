@@ -1,0 +1,16 @@
+name: Prod gRPC
+
+# Trigger only on push to `main` branch (production workflow)
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  call-prod:
+    # Calls a production-specific reusable workflow
+    uses: ./.github/workflows/template_prod.yml
+    with:
+      context: .
+      dockerfile: docker/grpc.dockerfile
+      image_name: grpc
