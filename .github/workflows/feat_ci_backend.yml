@@ -1,0 +1,46 @@
+name: CI Backend
+
+# Trigger on push and pull requests affecting backend feature branches
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'backend/**'
+  
+  pull_request:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'backend/**'
+
+jobs:
+  code_build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+      
+      - name: Build with Gradle
+        run: ./gradlew clean build --no-daemon
+      
+      - name: Run tests with Gradle
+        run: ./gradlew test --no-daemon

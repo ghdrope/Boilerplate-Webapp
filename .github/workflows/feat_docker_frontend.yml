@@ -1,0 +1,30 @@
+name: Docker Frontend
+
+# Trigger on feature branches push or PR affecting frontend or its Dockerfile, excluding `latest`
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/frontend.dockerfile'
+      - 'frontend/**'
+    
+  pull_request:
+    branches-ignore:
+      - main
+      - 'release-*.*.*'
+      - development
+    paths:
+      - 'docker/frontend.dockerfile'
+      - 'frontend/**'
+  
+jobs:
+  call-docker:
+    # Reuses shared docker build workflow for feat
+    uses: ./.github/workflows/template_feat_docker.yml
+    with:
+      dockerfile: docker/frontend.dockerfile
+      context: .
+      name: frontend

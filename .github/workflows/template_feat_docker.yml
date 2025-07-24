@@ -1,0 +1,32 @@
+name: Template Docker
+
+# This reusable workflow is intended for development Docker builds.
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        required: true
+        type: string
+      context:
+        required: true
+        type: string
+      name:
+        required: true
+        type: string
+
+jobs:
+  image_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Build image using Kaniko
+        # Kaniko builds Docker images inside containers (no Docker daemon required).
+        # Push is disabled (push: false) - for feature validation only.
+        uses: int128/kaniko-action@v1
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.dockerfile }}
+          push: false

@@ -1,0 +1,19 @@
+name: Dev gRPC
+
+# Trigger only on push to development branch (development workflow)
+on:
+  push:
+    branches:
+      - development
+    paths:
+      - 'grpc/**'
+      - 'docker/grpc.dockerfile'
+
+jobs:
+  call-prod:
+    # Calls a production-specific reusable workflow
+    uses: ./.github/workflows/template_dev.yml
+    with:
+      context: .
+      dockerfile: docker/grpc.dockerfile
+      image_name: grpc
