@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: boilerplate-webapp-release-set
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - branch: release-0.0.1
+            namespace: boilerplate-webapp-release-0-0-1
+            valuesFile: values.release-0.0.1.yaml
+  template:
+    metadata:
+      name: boilerplate-webapp-{{branch}}
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/ghdrope/boilerplate-webapp.git
+        targetRevision: main
+        path: charts/
+        helm:
+          valueFiles:
+            - values.yaml
+            - "{{valuesFile}}"
+          parameters:
+            - name: frontend.image.tag
+              value: "{{branch}}"
+            - name: backend.image.tag
+              value: "{{branch}}"
+            - name: grpc.image.tag
+              value: "{{branch}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
