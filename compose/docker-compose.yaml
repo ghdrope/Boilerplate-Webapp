@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.dockerfile
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+  frontend:
+    depends_on:
+      - backend
+    build:
+      context: ..
+      dockerfile: docker/frontend.dockerfile
+    ports:
+      - 3000:80
+    restart: unless-stopped
+  grpc:
+    depends_on:
+      - backend
+    build:
+      context: ..
+      dockerfile: docker/grpc.dockerfile
+    ports:
+      - 50051:50051
+    restart: unless-stopped
