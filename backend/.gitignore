@@ -1,0 +1,52 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Compiled class files
+*.class
+
+# Bin files
+bin/
+
+# Log files
+*.log
+
+# Build output
+/build/
+out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VSCode
+.vscode/
+
+# OS metadata files
+.DS_Store
+
+# Kotlin-specific
+*.kotlin_module
+
+# Local environment files
+.env
+*.local
+
+# Logs & reports
+logs/
+*.tmp
+*.swp
+
+# Tests reports
+/test-results/
+build/reports/
+
+# Ignore generated jar/war files
+*.jar
+*.war
+*.ear
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
