@@ -7,7 +7,7 @@ spec:
     project: default
     source:
         repoURL: https://github.com/ghdrope/boilerplate-webapp.git
-        targetRevision: main
+        targetRevision: development
         path: charts/
         helm:
             valueFiles:
