@@ -10,6 +10,9 @@ const browserGlobals = {
   window: 'readonly',
   document: 'readonly',
   navigator: 'readonly',
+  console: 'readonly',
+  alert: 'readonly',
+  fetch: 'readonly',
 };
 
 const domGlobals = {
