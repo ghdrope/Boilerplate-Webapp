@@ -31,5 +31,5 @@ COPY --from=builder /backend/build/libs/*.jar app.jar
 # Expose default Spring Boot port
 EXPOSE 8080
 
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Entrypoint for distroless
+CMD ["java", "-jar", "app.jar"]

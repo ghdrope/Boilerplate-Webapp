@@ -1,4 +1,4 @@
-name: Dev Frontend
+name: Dev gRPC
 
 # Trigger only on push to development branch (development workflow)
 on:
@@ -6,14 +6,14 @@ on:
     branches:
       - development
     paths:
-      - 'frontend/**'
-      - 'docker/frontend.dockerfile'
+      - 'grpc/**'
+      - 'docker/grpc.dockerfile'
 
 jobs:
   call-prod:
     # Calls a production-specific reusable workflow
-    uses: ./.github/workflows/template_dev.yml
+    uses: ./.github/workflows/template_dev_docker.yml
     with:
       context: .
-      dockerfile: docker/frontend.dockerfile
-      image_name: frontend
+      dockerfile: docker/grpc.dockerfile
+      image_name: grpc
