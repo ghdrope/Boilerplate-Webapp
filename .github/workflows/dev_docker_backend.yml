@@ -12,7 +12,7 @@ on:
 jobs:
   call-prod:
     # Calls a production-specific reusable workflow
-    uses: ./.github/workflows/template_dev.yml
+    uses: ./.github/workflows/template_dev_docker.yml
     with:
       context: .
       dockerfile: docker/backend.dockerfile
