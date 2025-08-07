@@ -3,24 +3,38 @@ services:
     build:
       context: ..
       dockerfile: docker/backend.dockerfile
-    ports:
-      - 8080:8080
+    container_name: boilerplate-webapp-backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/hello"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
     restart: unless-stopped
-  frontend:
-    depends_on:
-      - backend
-    build:
-      context: ..
-      dockerfile: docker/frontend.dockerfile
-    ports:
-      - 3000:80
-    restart: unless-stopped
+
   grpc:
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     build:
       context: ..
       dockerfile: docker/grpc.dockerfile
+    container_name: boilerplate-webapp-grpc
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=localhost:50051"]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  frontend:
+    depends_on:
+      grpc:
+        condition: service_healthy
+    build:
+      context: ..
+      dockerfile: docker/frontend.dockerfile
+    container_name: boilerplate-webapp-frontend
     ports:
-      - 50051:50051
+      - 3000:80
     restart: unless-stopped
