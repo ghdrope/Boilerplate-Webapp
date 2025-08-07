@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grpc
-  # Optionally, add labels or annotations for observability/tracking
 spec:
   replicas: {{ .Values.grpc.replicaCount }}   # Number of backend pod replicas
   selector:
@@ -18,4 +17,23 @@ spec:
         image: "{{ .Values.grpc.image.repository }}:{{ .Values.grpc.image.tag }}"
         imagePullPolicy: IfNotPresent   # Avoids unnecessary pulls if image exists locally
         ports:
-        - containerPort: {{ .Values.grpc.service.port }}   # Exposes internal container port
+          - containerPort: {{ .Values.grpc.service.port }}   # Exposes internal container port
+
+        resources:
+          {{- toYaml .Values.backend.resources | nindent 12 }}
+
+        readinessProbe:
+          exec:
+            command:
+              - grpc_health_probe
+              - -addr=localhost:50051
+          initialDelaySeconds: 10
+          periodSeconds: 10
+
+        livenessProbe:
+          exec:
+            command:
+              - grpc_health_probe
+              - -addr=localhost:50051
+          initialDelaySeconds: 30
+          periodSeconds: 10

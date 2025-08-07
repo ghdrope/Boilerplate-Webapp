@@ -1,7 +1,7 @@
 frontend:
   image:
     tag: latest
-  replicaCount: 3
+  replicaCount: 1
   service:
     type: ClusterIP
   ingress:
@@ -19,13 +19,13 @@ frontend:
 backend:
   image:
     tag: latest
-  replicaCount: 3
+  replicaCount: 1
   service:
     type: ClusterIP
 
 grpc:
   image:
     tag: latest
-  replicaCount: 2
+  replicaCount: 1
   service:
     type: ClusterIP

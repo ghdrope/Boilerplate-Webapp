@@ -4,30 +4,33 @@ kind: Ingress
 metadata:
   name: frontend-ingress
   annotations:
-    kubernetes.io/ingress.class: "nginx" # Defines the ingress controller to be used
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     {{- range .Values.frontend.ingress.hosts }}
-    - host: {{ .host }} # The domain name this rule applies to
+    - host: {{ .host }}
       http:
         paths:
           {{- range .paths }}
-          - path: {{ .path }} # URL path for routing
-            pathType: {{ .pathType }} # Can be 'Prefix' or 'Exact'
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
             backend:
               service:
-                name: frontend  # Target service name (should match metadata.name in frontend service)
+                name: frontend
                 port:
-                  number: {{ $.Values.frontend.service.port }}  # Port exposed by the frontend service
+                  number: {{ $.Values.frontend.service.port }}
           {{- end }}
     {{- end }}
+
   {{- if .Values.frontend.ingress.tls }}
   tls:
     {{- range .Values.frontend.ingress.tls }}
-    - secretName: {{ .secretName }} # Kubernetes TLS secret name
+    - secretName: {{ .secretName }}
       hosts:
         {{- range .hosts }}
-        - {{ . }} # Host(s) covered by this TLS secret
+        - {{ . }}
         {{- end }}
     {{- end }}
   {{- end }}
