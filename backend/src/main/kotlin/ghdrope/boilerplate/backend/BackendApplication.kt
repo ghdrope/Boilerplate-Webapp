@@ -17,8 +17,8 @@ class BackendApplication
  *
  * Runs the Spring Boot application.
  *
- * @param args command-line arguments
+ * @param args command-line arguments passed at startup.
  */
-fun main(args: Array<String>) {
+fun main(vararg args: String) {
     runApplication<BackendApplication>(*args)
 }
