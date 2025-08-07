@@ -1,0 +1,67 @@
+# === Utility-style Makefile for Kotlin/Gradle Backend ===
+
+# === Composite Commands ===
+
+ci_workflow_test: ## Run full CI test suite (format/lint/build/test/coverage)
+	make lint
+	make format-check
+	make build
+	make test
+	make coverage
+
+fix: ## Fix formatting issues with Spotless
+	make format
+
+# === Docker Compose ===
+
+compose-dev: ## Start all services in development environment but as production mode with docker-compose
+	docker-compose -f ../compose/docker-compose-dev.yaml up --build
+
+compose-dev-down: ## Stop all services in development environment
+	docker-compose -f ../compose/docker-compose-dev.yaml down
+
+# === App lifecycle ===
+
+dev: clean ## Run the Spring Boot app in dev mode with 'local' profile
+	SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
+
+preview: clean build ## Build and run the Spring Boot app in production mode
+	@jarfile=$$(ls build/libs/*.jar | head -n 1) && java -jar "$$jarfile" --spring.profiles.active=local
+
+app-dev: clean compose-dev ## Run BeenThere app in development environment but as production mode
+
+app-dev-down: compose-dev-down ## Stop BeenThere app in development environment but as production mode
+
+# === Build lifecycle ===
+
+build: clean ## Clean and build the project
+	./gradlew bootJar
+
+# === Tests and Coverage ===
+
+test: clean ## Run tests
+	./gradlew check
+
+coverage: ## Generate test coverage report (Jacoco)
+	./gradlew jacocoTestReport
+
+# === Quality ===
+
+lint: ## Run static analysis with Detekt
+	./gradlew detekt
+
+format: ## Apply code formatting with Spotless
+	./gradlew spotlessApply
+
+format-check: # Check code formatting without applying changes
+	./gradlew spotlessCheck
+
+# === Cleanup ===
+
+clean: ## Clean build artifacts and caches
+	./gradlew clean
+
+# === Help ===
+
+help: ## Show available commands
+	@grep -E '^[a-zA-Z0-9:_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

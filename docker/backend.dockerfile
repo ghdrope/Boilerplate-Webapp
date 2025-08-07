@@ -1,34 +1,43 @@
 #
 # ----- Stage 1: Build -----
 #
-FROM gradle:8.3-jdk17 AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
-WORKDIR /backend
+WORKDIR /app
 
-# Copy build files to leverage Docker cache for dependencies
-COPY backend/build.gradle.kts backend/settings.gradle.kts ./
+# Copy wrapper and build scripts first for better caching
+COPY backend/gradlew backend/gradlew.bat ./
 COPY backend/gradle ./gradle
+COPY backend/build.gradle.kts backend/settings.gradle.kts ./
 
-# Download dependencies (cache step)
-RUN gradle --no-daemon build -x test || true
+# Ensure wrapper is executable
+RUN chmod +x gradlew
 
-# Copy the rest of the source code
+# Pre-download dependencies to leverage Docker cache
+RUN ./gradlew --no-daemon dependencies
+
+# Copy the application source
 COPY backend/src ./src
 
-# Build the Spring Boot jar (skip tests for faster builds)
-RUN gradle --no-daemon clean bootJar -x test
+# Build only the bootable JAR (skip tests, linting, formatting checks)
+RUN ./gradlew --no-daemon clean bootJar -x test -x detekt -x spotlessCheck
+
+
 
 #
 # ----- Stage 2: Runtime -----
 #
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jdk-alpine
 
-WORKDIR /backend
+# Install curl
+RUN apk add --no-cache curl
 
-# Copy the jar built from the previous stage
-COPY --from=builder /backend/build/libs/*.jar app.jar
+WORKDIR /app
 
-# Expose default Spring Boot port
+# Copy only the final built JAR
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# Spring Boot default port
 EXPOSE 8080
 
 # Entrypoint for distroless
