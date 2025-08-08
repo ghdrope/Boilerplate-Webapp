@@ -1,17 +1,7 @@
-name: Docker Frontend
+name: Feat Docker Frontend Push
 
-# Trigger on feature branches push or PR affecting frontend or its Dockerfile, excluding `latest`
 on:
   push:
-    branches-ignore:
-      - main
-      - 'release-*.*.*'
-      - development
-    paths:
-      - 'docker/frontend.dockerfile'
-      - 'frontend/**'
-    
-  pull_request:
     branches-ignore:
       - main
       - 'release-*.*.*'
