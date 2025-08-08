@@ -1,17 +1,7 @@
-name: Docker Backend
+name: Feat Docker Backend Push
 
-# Trigger on feature branches push or PR affecting backend or its Dockerfile
 on:
   push:
-    branches-ignore:
-      - main
-      - 'release-*.*.*'
-      - development
-    paths:
-      - 'docker/backend.dockerfile'
-      - 'backend/**'
-    
-  pull_request:
     branches-ignore:
       - main
       - 'release-*.*.*'
