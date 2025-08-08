@@ -2,12 +2,14 @@
 
 # === Composite Commands ===
 
-ci_workflow_test: ## Run full CI test suite (format/lint/build/test/coverage)
+ci_workflow_test_push: ## Run full CI feature branches push test suite (format/lint/build/unit test/coverage)
 	make lint
 	make format-check
 	make build
-	make test
-	make coverage
+	make test-unit
+
+ci_workflow_test_pr: ## Run full CI feature branches PR to development test suite (integration test)
+	make test-integration
 
 fix: ## Fix formatting issues with Spotless
 	make format
@@ -39,8 +41,14 @@ build: clean ## Clean and build the project
 
 # === Tests and Coverage ===
 
-test: clean ## Run tests
-	./gradlew check
+test: clean ## Run all tests (unit + integration) with coverage
+	./gradlew test
+
+test-unit: clean ## Run only unit tests with coverage
+	./gradlew testUnit jacocoTestReport
+
+test-integration: clean ## Run only integration tests (no coverage)
+	./gradlew testIntegration
 
 coverage: ## Generate test coverage report (Jacoco)
 	./gradlew jacocoTestReport
