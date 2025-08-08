@@ -5,7 +5,7 @@ services:
       dockerfile: docker/backend.dockerfile
     container_name: boilerplate-webapp-backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/hello"]
+      test: ["CMD-SHELL", "curl", "-f", "http://localhost:8080/hello"]
       interval: 5s
       timeout: 3s
       retries: 5

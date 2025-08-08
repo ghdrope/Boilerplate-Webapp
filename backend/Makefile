@@ -28,9 +28,9 @@ dev: clean ## Run the Spring Boot app in dev mode with 'local' profile
 preview: clean build ## Build and run the Spring Boot app in production mode
 	@jarfile=$$(ls build/libs/*.jar | head -n 1) && java -jar "$$jarfile" --spring.profiles.active=local
 
-app-dev: clean compose-dev ## Run BeenThere app in development environment but as production mode
+app-dev: clean compose-dev ## Run app in development environment but as production mode
 
-app-dev-down: compose-dev-down ## Stop BeenThere app in development environment but as production mode
+app-dev-down: compose-dev-down ## Stop app in development environment but as production mode
 
 # === Build lifecycle ===
 
