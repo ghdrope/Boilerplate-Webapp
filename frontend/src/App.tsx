@@ -1,11 +1,13 @@
+import Home from './Components/Home';
+
 /**
  * Main application components.
  *
- * Currently renders a simple "Hello World!" heading.
- * This is the root UI component of the frontend app.
+ * Currently renders the <Home /> component.
+ * This acts as the entry point for all application-level components.
  */
 function App() {
-  return <h1>Hello World!</h1>;
+  return <Home />;
 }
 
 export default App;
