@@ -1,4 +1,4 @@
-name: Dev Frontend
+name: Dev Docker Frontend Push
 
 # Trigger only on push to development branch (development workflow)
 on:
@@ -11,7 +11,6 @@ on:
 
 jobs:
   call-prod:
-    # Calls a production-specific reusable workflow
     uses: ./.github/workflows/template_dev_docker.yml
     with:
       context: .

@@ -1,6 +1,5 @@
-name: CI Frontend
+name: Feat CI Frontend Push
 
-# Trigger on push and pull requests affecting frontend feature branches
 on:
   push:
     branches-ignore:
@@ -9,17 +8,9 @@ on:
       - development
     paths:
       - 'frontend/**'
-  
-  pull_request:
-    branches-ignore:
-      - main
-      - 'release-*.*.*'
-      - development
-    paths:
-      - 'frontend/**'
 
 jobs:
-  code_lint-typecheck:
+  lint-typecheck:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -28,30 +19,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup node
+      - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
           node-version: 22
           cache: 'yarn'
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Yarn install
+      - name: Install dependencies
         run: yarn install --frozen-lockfile
       
-      - name: Lint JS/TS (ESLint)
+      - name: Run ESLint (JS/TS linting)
         run: yarn lint
       
-      - name: Type checking (tsc)
+      - name: Run TypeScript type check
         run: yarn type-check
 
-      - name: Check Prettier formatting
+      - name: Verify Prettier formatting
         run: yarn format:check
 
-      - name: Lint CSS (Stylelint)
+      - name: Run Stylelint (CSS linting)
         run: yarn lint:css
   
-  code_build-and-test:
-    needs: code_lint-typecheck
+  build-and-unit-test:
+    needs: lint-typecheck
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -60,21 +51,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup node
+      - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
           node-version: 22
           cache: 'yarn'
           cache-dependency-path: frontend/yarn.lock
 
-      - name: Yarn install
+      - name: Install dependencies
         run: yarn install --frozen-lockfile
       
-      - name: Build project (Vite)
+      - name: Build the project with Vite
         run: yarn build
       
-      - name: Run Jest tests
-        run: yarn test
+      - name: Run unit tests with Jest
+        run: yarn test:unit
 
       - name: Upload coverage report
         if: always()
