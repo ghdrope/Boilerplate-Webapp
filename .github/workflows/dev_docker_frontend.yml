@@ -1,6 +1,5 @@
 name: Dev Docker Frontend Push
 
-# Trigger only on push to development branch (development workflow)
 on:
   push:
     branches:
