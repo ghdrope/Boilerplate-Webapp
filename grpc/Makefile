@@ -1,9 +1,14 @@
 # === Utility-style Makefile for Go gRPC Project ===
 
 # Test Coverage Threshold
-MIN_COVERAGE ?= 0
+MIN_COVERAGE ?= 75
 
-.PHONY: server client lint
+.PHONY: server client lint format format-check clean \
+        test test-unit test-integration \
+        ci_workflow_test fix \
+        compose-dev compose-dev-down preview \
+        build build-server build-client help \
+        grpc-list-services grpc-list-methods grpc-describe grpc-call
 
 # === Compose Commands ===
 
@@ -12,12 +17,11 @@ ci_workflow_test: ## Run full CI test suite (lint/build/test)
 	make format-check
 	make build
 	make test
-	make coverage
 
 fix: ## Fix formatting issues
 	make format
 
-# === App lifecycle ===
+# === Docker Compose ===
 
 compose-dev: ## Start all services in development environment but as production mode with docker-compose
 	docker-compose -f ../compose/docker-compose-dev.yaml up --build
@@ -28,45 +32,52 @@ compose-dev-down: ## Stop all services in development environment
 # === App lifecycle ===
 
 server: ## Run the gRPC server locally in development mode
-	ENV=dev go run ./server
+	ENV=dev go run ./cmd/server
 
 client: ## Run the gRPC client to test the server
-	go run ./client
+	go run ./cmd/client
 
 preview: build-server ## Build and run the gRPC server in production mode
 	./bin/server
 
+app-dev: clean compose-dev ## Run app in development environment but as production mode
+
+app-dev-down: compose-dev-down ## Stop app in development environment but as production mode
+
 # === Build lifecycle ===
 
 build: clean ## Build the gRPC server binary
-	go build -o bin/grpc-server ./server
+	go build -o bin/grpc-server ./cmd/server
 
 build-server: clean ## Build the gRPC server binary
-	go build -o ./bin/server ./server
+	go build -o ./bin/server ./cmd/server
 
 build-client: clean ## Build the gRPC client binary
-	go build -o ./bin/client ./client
+	go build -o ./bin/client ./cmd/client
 
 # === Tests ===
 
-test: ## Run Go tests
-	go test ./...
+test: test-unit test-integration ## Run all tests (unit + integration) with coverage + threshold (only unit)
+	@echo "✔ All tests passed."
 
-coverage: ## Run tests with coverage and enforce minimum coverage
-	go test -coverprofile=coverage.out ./...
+test-unit: ## Run unit tests only with coverage and enforce threshold
+	go test -coverprofile=coverage.out ./internal/...
 	@coverage=$$(go tool cover -func=coverage.out | grep total: | awk '{print substr($$3, 1, length($$3)-1)}'); \
 	minimum=$(MIN_COVERAGE); \
 	if (( $$(echo "$$minimum > 0" | bc -l) )); then \
 		result=$$(echo "$$coverage >= $$minimum" | bc); \
 		if [ $$result -eq 1 ]; then \
-			echo "Coverage $$coverage% >= $$minimum% ✔"; \
+			echo "Unit test coverage $$coverage% >= $$minimum% ✔"; \
 		else \
-			echo "Coverage $$coverage% < $$minimum% ✘"; \
+			echo "Unit test coverage $$coverage% < $$minimum% ✘"; \
 			exit 1; \
 		fi; \
 	else \
-		echo "Coverage $$coverage% (no minimum enforced)"; \
+		echo "Unit test coverage $$coverage% (no minimum enforced)"; \
 	fi
+
+test-integration: ## Run integration tests only (no coverage, no threshold)
+	go test ./tests/integration/...
 
 # === Quality ===
 
@@ -74,16 +85,20 @@ lint: ## Run golangci-lint
 	golangci-lint run ./...
 
 format: ## Format code with gofmt
-	gofmt -w ./server ./client
+	gofmt -w ./cmd ./internal
 
 format-check: ## Check code formatting
-	gofmt -l ./server ./client
-	test -z "$(gofmt -l ./server ./client)"
+	@if [ -n "$$(gofmt -l ./cmd ./internal)" ]; then \
+		echo "Formatting issues found:"; \
+		gofmt -l ./cmd ./internal; \
+		exit 1; \
+	fi
 
 # === Cleanup ===
 
 clean: ## Clean build artifacts, and test coverage reports
 	rm -rf bin/ coverage.out
+	go clean -testcache
 
 # === Help ===
 
