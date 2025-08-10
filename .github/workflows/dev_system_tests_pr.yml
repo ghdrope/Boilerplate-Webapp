@@ -1,0 +1,16 @@
+name: PR System Tests
+
+on:
+  pull_request:
+    branches:
+      - 'release-*.*.*'
+
+jobs:
+  system-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Running system tests
+        run: "echo 'Boilerplate: Running system tests.'"
+
+      - name: System tests executed
+        run: "echo 'Boilerplate: System tests executed successfully.'"

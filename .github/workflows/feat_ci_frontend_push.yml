@@ -41,7 +41,7 @@ jobs:
       - name: Run Stylelint (CSS linting)
         run: yarn lint:css
   
-  build-and-unit-test:
+  build-and-unit-tests:
     needs: lint-typecheck
     runs-on: ubuntu-latest
     defaults:

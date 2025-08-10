@@ -35,7 +35,7 @@ jobs:
       - name: Check Spotless formatting
         run: ./gradlew spotlessCheck
 
-  build-and-unit-test:
+  build-and-unit-tests:
     needs: lint-format-check
     runs-on: ubuntu-latest
     defaults:
