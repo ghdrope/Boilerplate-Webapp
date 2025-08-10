@@ -1,0 +1,66 @@
+name: DAST Frontend
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'frontend/**'
+      - 'docker/frontend.dockerfile'
+  push:
+    branches:
+      - development
+      - main
+      - 'release-*.*.*'
+    paths:
+      - 'frontend/**'
+      - 'docker/frontend.dockerfile'
+
+jobs:
+  dast-owasp-zap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start services with docker-compose
+        run: |
+          docker compose -f compose/docker-compose-dev.yaml up -d --build
+
+      - name: Wait for backend to be healthy
+        run: |
+          for i in {1..20}; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' beenthere-backend || echo "none")
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Backend is healthy!"
+              break
+            fi
+            echo "Waiting for backend health... ($i/20)"
+            sleep 5
+          done
+
+      - name: Wait for frontend to respond
+        run: |
+          for i in {1..20}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Frontend is up!"
+              break
+            fi
+            echo "Waiting for frontend... ($i/20)"
+            sleep 5
+          done
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: 'http://localhost:3000'
+          rules_file_name: '.zap/rules.tsv'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          cmd_options: ${{ github.event_name == 'schedule' && '-a' || '-a -m 2' }}
+
+      - name: Tear down services
+        if: always()
+        run: docker compose -f compose/docker-compose-dev.yaml down

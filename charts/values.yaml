@@ -7,7 +7,7 @@ frontend:
 
   service:
     type: ClusterIP # Internal service type
-    port: 80        # Frontend listens on port 80
+    port: 8080      # Frontend listens on port 8080
 
   ingress:
     enabled: false  # Ingress disabled by default

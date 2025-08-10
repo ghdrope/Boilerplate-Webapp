@@ -1,0 +1,86 @@
+name: SAST Frontend
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'frontend/**'
+      - 'docker/frontend.dockerfile'
+  push:
+    branches:
+      - development
+      - main
+      - 'release-*.*.*'
+    paths:
+      - 'frontend/**'
+      - 'docker/frontend.dockerfile'
+
+jobs:
+  codeql-analysis:
+    name: Run CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+          upload: true
+
+  dependency-scan:
+    name: Scan dependencies for vulnerabilities
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Yarn Audit (fail on high/critical)
+        run: yarn audit --groups dependencies --level high
+
+  trivy-scan:
+    name: Trivy FS and Dockerfile scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy FS scan (frontend folder)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: frontend
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+      - name: Run Trivy scan on Dockerfile
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: docker/frontend.dockerfile
+          exit-code: 1

@@ -42,5 +42,5 @@ services:
       dockerfile: docker/frontend.dockerfile
     container_name: boilerplate-webapp-frontend
     ports:
-      - 3000:80
+      - 3000:8080
     restart: unless-stopped
