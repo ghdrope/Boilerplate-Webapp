@@ -34,8 +34,26 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 # Copy the built frontend assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80 to serve HTTP traffic
-EXPOSE 80
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Create nginx cache directory with proper ownership
+RUN mkdir -p /var/cache/nginx/client_temp \
+    && chown -R appuser:appgroup /var/cache/nginx
+
+# Create /run directory and give ownership to appuser
+RUN mkdir -p /run \
+    && chown appuser:appgroup /run
+
+# Change ownership of the static files to the non-root user
+RUN chown -R appuser:appgroup /usr/share/nginx/html
+
+# Optional: Change Nginx listen port to 8080 to avoid requiring root privileges
+RUN sed -i 's/listen 80;/listen 8080;/' /etc/nginx/nginx.conf
+EXPOSE 8080
+
+# Run Nginx as non-root user
+USER appuser
 
 # Start nginx in the foreground (so the container doesn't exit)
 CMD ["nginx", "-g", "daemon off;"]
