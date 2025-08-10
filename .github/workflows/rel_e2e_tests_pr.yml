@@ -1,0 +1,16 @@
+name: PR End-to-end Tests
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  end-to-end-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Running end-to-end tests
+        run: "echo 'Boilerplate: Running end-to-end tests.'"
+
+      - name: End-to-end tests executed
+        run: "echo 'Boilerplate: End-to-end tests executed successfully.'"
