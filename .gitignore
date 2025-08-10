@@ -1,2 +1,10 @@
 # VSCode
 .vscode/
+
+# Ignore all files inside test directories except for .gitkeep
+# This keeps empty test folders (e2e, system) tracked in Git until real test files are added
+tests/system/*
+!tests/system/.gitkeep
+
+tests/e2e/*
+!tests/e2e/.gitkeep

@@ -1,6 +1,5 @@
-name: Template Docker Feature Build
+name: Template Feat Docker Push
 
-# This reusable workflow is intended for development Docker builds.
 on:
   workflow_call:
     inputs:

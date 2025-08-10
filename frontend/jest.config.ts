@@ -4,7 +4,7 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest/presets/js-with-ts',
   testEnvironment: 'jsdom',
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/App.tsx', '!src/index.tsx'],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/index.tsx', '!**/*.integration.test.tsx'],
   coverageDirectory: 'coverage',
   coverageThreshold: {
     global: {

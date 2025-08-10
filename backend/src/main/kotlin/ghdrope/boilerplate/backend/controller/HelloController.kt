@@ -1,4 +1,4 @@
-package ghdrope.boilerplate.backend
+package ghdrope.boilerplate.backend.controller
 
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.GetMapping

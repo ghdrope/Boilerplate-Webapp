@@ -1,0 +1,44 @@
+name: Feat CI Backend PR
+
+on:
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-integration-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Clean and build project
+        run: ./gradlew clean bootJar --no-daemon
+
+      - name: Run integration tests with JUnit
+        run: ./gradlew testIntegration --no-daemon

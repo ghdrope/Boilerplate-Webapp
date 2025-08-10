@@ -1,51 +1,54 @@
 #
-# ----- Stage 1: Build -----
+# ----- Stage 1: Build the gRPC server -----
 #
 FROM golang:1.24-alpine AS builder
 
-# Install git for module fetching and build dependencies
+# Install git for Go module fetching and build-base for compiling dependencies
 RUN apk add --no-cache git build-base
+
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy go.mod and go.sum to leverage Docker cache for dependencies
+# Copy go.mod and go.sum to leverage Docker layer caching for dependencies
 COPY grpc/go.mod grpc/go.sum ./
 
-# Download dependencies
+# Download Go dependencies
 RUN go mod download
 
-# Copy the rest of the server source code
-COPY grpc/server ./server
+# Copy the rest of the gRPC source code (cmd, internal, gen, proto)
+COPY grpc/cmd ./cmd
+COPY grpc/internal ./internal
 COPY grpc/gen ./gen
 COPY grpc/proto ./proto
 
-# Build the Go binary with static linking and no cgo for portability
-WORKDIR /app/server
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o grpc-server main.go
+# Build the gRPC server binary for Linux with static linking (no CGO)
+WORKDIR /app/cmd/server
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/grpc-server main.go
 
 
 
 #
-# ----- Stage 2: Run -----
+# ----- Stage 2: Runtime container -----
 #
 FROM alpine:3.21
 
-# Install certificates and wget for grpc_health_probe
+# Install CA certificates (for TLS) and wget (to fetch health probe)
 RUN apk --no-cache add ca-certificates wget
 
-# Download latest grpc_health_probe binary
-RUN wget -qO /usr/local/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.38/grpc_health_probe-linux-amd64 && \
+# Download the latest gRPC health probe binary
+RUN wget -qO /usr/local/bin/grpc_health_probe \
+    https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.38/grpc_health_probe-linux-amd64 && \
     chmod +x /usr/local/bin/grpc_health_probe
 
-# Set working directory
+# Set working directory inside the runtime container
 WORKDIR /app
 
-# Copy built binary from builder stage
-COPY --from=builder /app/server/grpc-server .
+# Copy built binary from the builder stage
+COPY --from=builder /app/grpc-server .
 
-# Expose gRPC port
+# Expose the default gRPC server port
 EXPOSE 50051
 
-# Run the binary
+# Run the gRPC server binary
 CMD ["./grpc-server"]

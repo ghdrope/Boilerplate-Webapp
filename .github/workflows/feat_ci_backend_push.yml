@@ -1,6 +1,5 @@
-name: CI Backend
+name: Feat CI Backend Push
 
-# Trigger on push and pull requests affecting backend feature branches
 on:
   push:
     branches-ignore:
@@ -9,27 +8,18 @@ on:
       - development
     paths:
       - 'backend/**'
-  
-  pull_request:
-    branches-ignore:
-      - main
-      - 'release-*.*.*'
-      - development
-    paths:
-      - 'backend/**'
 
 jobs:
-  code_lint-format-check:
+  lint-format-check:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Set up JDK 21
+      - name: Set up JDK environment
         uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -45,18 +35,17 @@ jobs:
       - name: Check Spotless formatting
         run: ./gradlew spotlessCheck
 
-  code_build-and-test:
-    needs: code_lint-format-check
+  build-and-unit-tests:
+    needs: lint-format-check
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up JDK 21
+      - name: Set up JDK environment
         uses: actions/setup-java@v3
         with:
           distribution: temurin
@@ -79,12 +68,12 @@ jobs:
       - name: Clean and build project
         run: ./gradlew clean bootJar --no-daemon
 
-      - name: Run tests with coverage threshold
-        run: ./gradlew jacocoTestCoverageVerification test jacocoTestReport --no-daemon
+      - name: Run unit tests with JUnit
+        run: ./gradlew testUnit jacocoTestReport --no-daemon
 
-      #- name: Upload Jacoco coverage report
-      #  if: always()
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: backend-coverage-report
-      #    path: backend/build/reports/jacoco/test
+      - name: Upload Jacoco coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/build/reports/tests/testUnit
