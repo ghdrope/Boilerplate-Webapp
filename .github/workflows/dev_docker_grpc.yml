@@ -1,6 +1,5 @@
-name: Dev gRPC
+name: Dev Docker gRPC Push
 
-# Trigger only on push to development branch (development workflow)
 on:
   push:
     branches:
