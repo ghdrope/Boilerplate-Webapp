@@ -5,11 +5,16 @@
 ci_workflow_test_push: ## Run full CI feature branches push test suite (format/lint/build/unit test/coverage)
 	make lint
 	make format-check
+	make clean
 	make build
 	make test-unit
 
-ci_workflow_test_pr: ## Run full CI feature branches PR to development test suite (integration test)
+ci_workflow_test_pr: clean build ## Run full CI feature branches PR to development test suite (integration test)
 	make test-integration
+
+sast_workflow_test_pr: clean build ## Run full SAST test suite
+	make sast-trivy-fs
+	make sast-trivy-dockerfile
 
 fix: ## Fix formatting issues with Spotless
 	make format
@@ -63,6 +68,17 @@ format: ## Apply code formatting with Spotless
 
 format-check: # Check code formatting without applying changes
 	./gradlew spotlessCheck
+
+# === Security Scans ===
+
+sast-audit: ## Run OWASP Dependency-Check scan
+	./gradlew dependencyCheckAnalyze
+
+sast-trivy-fs: ## Run Trivy filesystem scan
+	./gradlew trivyFsScan
+
+sast-trivy-dockerfile: ## Run Trivy Dockerfile config scan
+	./gradlew trivyDockerfileScan
 
 # === Cleanup ===
 

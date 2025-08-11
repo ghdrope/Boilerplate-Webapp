@@ -1,4 +1,4 @@
-name: DAST Frontend
+name: DAST Backend
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
     branches:
       - development
     paths:
-      - 'frontend/**'
-      - 'docker/frontend.dockerfile'
+      - 'backend/**'
+      - 'docker/backend.dockerfile'
       - '.zap/rules.tsv'
   push:
     branches:
@@ -17,8 +17,8 @@ on:
       - 'release-*.*.*'
       - main
     paths:
-      - 'frontend/**'
-      - 'docker/frontend.dockerfile'
+      - 'backend/**'
+      - 'docker/backend.dockerfile'
       - '.zap/rules.tsv'
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Start services with docker-compose
         run: |
-          docker compose -f compose/docker-compose-dev.yaml up -d --build
+          docker compose -f compose/docker-compose-dev.yaml up -d --build backend
 
       - name: Wait for backend to be healthy
         run: |
@@ -38,7 +38,7 @@ jobs:
             STATUS=$(docker inspect --format='{{.State.Health.Status}}' boilerplate-webapp-backend || echo "none")
             if [ "$STATUS" = "healthy" ]; then
               echo "Backend is healthy!"
-              break
+              exit 0
             fi
             echo "Waiting for backend health... ($i/20)"
             sleep 5
@@ -46,23 +46,10 @@ jobs:
           echo "Backend did not become healthy in time" >&2
           exit 1
 
-      - name: Wait for frontend to respond
-        run: |
-          for i in {1..20}; do
-            if curl -s http://localhost:3000 > /dev/null; then
-              echo "Frontend is up!"
-              break
-            fi
-            echo "Waiting for frontend... ($i/20)"
-            sleep 5
-          done
-          echo "Frontend did not become healthy in time" >&2
-          exit 1
-
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.14.0
         with:
-          target: 'http://localhost:3000'
+          target: 'http://localhost:8080/hello'
           rules_file_name: '.zap/rules.tsv'
           token: ${{ secrets.GITHUB_TOKEN }}
           cmd_options: ${{ github.event_name == 'schedule' && '-a' || '-a -m 2' }}
