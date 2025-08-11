@@ -1,0 +1,112 @@
+name: SAST Backend
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'backend/**'
+      - 'docker/backend.dockerfile'
+  push:
+    branches:
+      - development
+      - main
+      - 'release-*.*.*'
+    paths:
+      - 'backend/**'
+      - 'docker/backend.dockerfile'
+
+jobs:
+  codeql-analysis:
+    name: Run CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Autobuild (Gradle)
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
+          upload: true
+
+  dependency-check:
+    name: OWASP Dependency-Check scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/gradle.lockfile') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run Dependency-Check Analyze
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: ./gradlew dependencyCheckAnalyze --no-daemon
+
+      - name: Upload Dependency-Check SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ./backend/build/reports/dependency-check/dependency-check-report.sarif
+
+      - name: Upload Dependency-Check Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: ./backend/build/reports/dependency-check/
+
+  trivy-scan:
+    name: Trivy FS and Dockerfile scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy FS scan on backend folder
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: backend
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+      - name: Run Trivy Dockerfile config scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: docker/backend.dockerfile
+          severity: HIGH,CRITICAL
+          exit-code: 1
