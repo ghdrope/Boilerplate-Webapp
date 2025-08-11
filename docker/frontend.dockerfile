@@ -48,9 +48,11 @@ RUN mkdir -p /run \
 # Change ownership of the static files to the non-root user
 RUN chown -R appuser:appgroup /usr/share/nginx/html
 
-# Optional: Change Nginx listen port to 8080 to avoid requiring root privileges
-RUN sed -i 's/listen 80;/listen 8080;/' /etc/nginx/nginx.conf
 EXPOSE 8080
+
+# Add HEALTHCHECK to verify the container is serving content correctly
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080 || exit 1
 
 # Run Nginx as non-root user
 USER appuser

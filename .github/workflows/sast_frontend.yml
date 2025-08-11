@@ -41,6 +41,9 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"
+          upload: true
 
   dependency-scan:
     name: Scan dependencies for vulnerabilities
@@ -58,7 +61,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run Yarn Audit (fail only on high/critical)
+      - name: Run Yarn Audit (fail on high/critical)
         run: yarn audit --groups dependencies --level high
 
   trivy-scan:
@@ -73,9 +76,11 @@ jobs:
           scan-type: fs
           scan-ref: frontend
           severity: HIGH,CRITICAL
+          exit-code: 1
 
       - name: Run Trivy scan on Dockerfile
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: config
           scan-ref: docker/frontend.dockerfile
+          exit-code: 1
