@@ -37,3 +37,6 @@ Thumbs.db
 # Go coverage output
 *.out
 *.coverprofile
+
+# Go vulnerability check output
+govulncheck-report.json
