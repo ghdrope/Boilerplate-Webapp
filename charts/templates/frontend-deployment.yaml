@@ -3,21 +3,21 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: {{ .Values.frontend.replicaCount }}   # Number of backend pod replicas
+  replicas: {{ .Values.frontend.replicaCount }}
   selector:
     matchLabels:
-      app: frontend      # Must match the pod template label
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend    # Label used for service discovery
+        app: frontend
     spec:
       containers:
       - name: frontend
         image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
-        imagePullPolicy: IfNotPresent   # Avoids unnecessary pulls if image exists locally
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: {{ .Values.frontend.service.port }}   # Exposes internal container port
+        - containerPort: {{ .Values.frontend.service.port }}
 
         livenessProbe:
           httpGet:
