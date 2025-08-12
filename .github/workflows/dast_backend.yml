@@ -38,7 +38,7 @@ jobs:
             STATUS=$(docker inspect --format='{{.State.Health.Status}}' boilerplate-webapp-backend || echo "none")
             if [ "$STATUS" = "healthy" ]; then
               echo "Backend is healthy!"
-              break
+              exit 0
             fi
             echo "Waiting for backend health... ($i/20)"
             sleep 5

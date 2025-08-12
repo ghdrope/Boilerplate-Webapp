@@ -176,7 +176,7 @@ tasks.register<Exec>("trivyDockerfileScan") {
     commandLine(
         "trivy", "config",
         "--severity", "HIGH,CRITICAL",
-        "--exit-code", "1",     // <-- Também aqui
+        "--exit-code", "1",
         "../docker/backend.dockerfile"
     )
 }

@@ -1,0 +1,102 @@
+name: SAST gRPC
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1'
+  pull_request:
+    branches:
+      - development
+    paths:
+      - 'grpc/**'
+      - 'docker/grpc.dockerfile'
+  push:
+    branches:
+      - development
+      - main
+      - 'release-*.*.*'
+    paths:
+      - 'grpc/**'
+      - 'docker/grpc.dockerfile'
+
+jobs:
+  codeql-analysis:
+    name: Run CodeQL Analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: grpc
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: go
+
+      - name: Autobuild
+        run: |
+          go mod download
+          go build ./...
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:go"
+          upload: true
+    
+  dependency-check:
+    name: GoVulnCheck Dependency-Check scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: grpc
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.24
+          cache: true
+          cache-dependency-path: grpc/go.sum
+        
+      - name: Install dependencies
+        run: go mod tidy
+
+      - name: Run govulncheck scan
+        run: make sast-audit
+
+      - name: Upload govulncheck report
+        uses: actions/upload-artifact@v4
+        with:
+          name: govulncheck-report
+          path: grpc/govulncheck-report.json
+        
+  trivy-scan:
+    name: Trivy FS and Dockerfile scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy FS scan (grpc folder)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: grpc
+          severity: HIGH,CRITICAL
+          exit-code: 1
+
+      - name: Run Trivy scan on Dockerfile
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: docker/grpc.dockerfile
+          exit-code: 1
