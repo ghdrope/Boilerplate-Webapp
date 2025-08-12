@@ -25,10 +25,10 @@ This repository contains a full-stack boilerplate application composed of multip
 - **`docker/`**  
   Dockerfiles for building container images of each component, optimized with multi-stage builds.
 
-- **`tests/`**
+- **`tests/`**  
   Contains the `system/` and `e2e/` directories where system and end-to-end tests for the application are built and maintained.
 
-- **`.zap/`**
+- **`.zap/`**  
   Houses the security rules and configurations used by DAST (Dynamic Application Security Testing) workflows.
 
 - **`.github/workflows/`**  

@@ -13,6 +13,7 @@ ci_workflow_test_pr: clean build ## Run full CI feature branches PR to developme
 	make test-integration
 
 sast_workflow_test_pr: clean build ## Run full SAST test suite
+	make sast-audit
 	make sast-trivy-fs
 	make sast-trivy-dockerfile
 
@@ -21,10 +22,10 @@ fix: ## Fix formatting issues with Spotless
 
 # === Docker Compose ===
 
-compose-dev: ## Start all services in development environment but as production mode with docker-compose
+app-dev: ## Start all services in development environment but as production mode with docker-compose
 	docker-compose -f ../compose/docker-compose-dev.yaml up --build
 
-compose-dev-down: ## Stop all services in development environment
+app-dev-down: ## Stop all services in development environment
 	docker-compose -f ../compose/docker-compose-dev.yaml down
 
 # === App lifecycle ===
