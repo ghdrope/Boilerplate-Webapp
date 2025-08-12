@@ -1,23 +1,23 @@
 frontend:
   image:
-    repository: ghcr.io/ghdrope/boilerplate-webapp-frontend # Docker image for frontend
+    repository: ghcr.io/ghdrope/boilerplate-webapp-frontend
     tag: latest
 
-  replicaCount: 1                                            # Image tag
+  replicaCount: 1
 
   service:
-    type: ClusterIP # Internal service type
-    port: 80        # Frontend listens on port 80
+    type: ClusterIP
+    port: 8080
 
   ingress:
-    enabled: false  # Ingress disabled by default
+    enabled: false
     hosts:
-      - host: frontend.example.com  # Placeholder host for ingress
+      - host: frontend.example.com
         paths:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: frontend-tls  # Optional TLS secret for ingress
+      - secretName: frontend-tls
         hosts:
           - frontend.example.com
   
@@ -35,14 +35,14 @@ frontend:
 
 backend:
   image:
-    repository: ghcr.io/ghdrope/boilerplate-webapp-backend  # Docker image for backend
+    repository: ghcr.io/ghdrope/boilerplate-webapp-backend
     tag: latest
 
   replicaCount: 1   
 
   service:
     type: ClusterIP
-    port: 8080  # Backend service port
+    port: 8080
 
   resources:
     requests:
@@ -56,13 +56,13 @@ backend:
 
 grpc:
   image:
-    repository: ghcr.io/ghdrope/boilerplate-webapp-grpc # Docker image for gRPC
+    repository: ghcr.io/ghdrope/boilerplate-webapp-grpc
     tag: latest
 
   replicaCount: 1   
   service:
     type: ClusterIP
-    port: 50051 # gRPC port
+    port: 50051
 
   resources:
     requests:

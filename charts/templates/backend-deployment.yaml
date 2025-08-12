@@ -3,21 +3,21 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: {{ .Values.backend.replicaCount }}   # Number of backend pod replicas
+  replicas: {{ .Values.backend.replicaCount }}
   selector:
     matchLabels:
-      app: backend      # Must match the pod template label
+      app: backend
   template:
     metadata:
       labels:
-        app: backend    # Label used for service discovery
+        app: backend
     spec:
       containers:
       - name: backend
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
-        imagePullPolicy: IfNotPresent   # Avoids unnecessary pulls if image exists locally
+        imagePullPolicy: IfNotPresent
         ports:
-          - containerPort: {{ .Values.backend.service.port }}   # Exposes internal container port
+          - containerPort: {{ .Values.backend.service.port }}
 
         resources:
           {{- toYaml .Values.backend.resources | nindent 12 }}

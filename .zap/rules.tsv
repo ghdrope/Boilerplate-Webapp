@@ -1,0 +1,16 @@
+# ID	Action	Reason
+10020	IGNORE	Content Security Policy (CSP) Header Not Set
+10021	IGNORE	X-Content-Type-Options Header Missing
+10035	IGNORE	Strict-Transport-Security Header Not Set
+10038	IGNORE	Content-Type Header Missing
+10096	IGNORE	Timestamp Disclosure - Unix
+10202	IGNORE	Information Disclosure - Sensitive Information in URL
+90033	IGNORE	Web Browser XSS Protection Not Enabled
+90035	IGNORE	CSP: Wildcard Directive
+
+90004	IGNORE	Insufficient Site Isolation Against Spectre Vulnerability
+10109	IGNORE	Modern Web Application
+10036	IGNORE	Server Leaks Version Information via "Server" HTTP Response Header Field
+10027	IGNORE	Information Disclosure - Suspicious Comments
+90005	IGNORE	Sec-Fetch Headers Missing
+10049	IGNORE	Storable and Cacheable Content

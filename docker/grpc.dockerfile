@@ -41,14 +41,27 @@ RUN wget -qO /usr/local/bin/grpc_health_probe \
     https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.38/grpc_health_probe-linux-amd64 && \
     chmod +x /usr/local/bin/grpc_health_probe
 
+# Create non-root user and group
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 # Set working directory inside the runtime container
 WORKDIR /app
 
 # Copy built binary from the builder stage
 COPY --from=builder /app/grpc-server .
 
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /app
+
 # Expose the default gRPC server port
 EXPOSE 50051
+
+# Add HEALTHCHECK using gRPC health probe
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD grpc_health_probe -addr=localhost:50051 || exit 1
+
+# Run as non-root user
+USER appuser
 
 # Run the gRPC server binary
 CMD ["./grpc-server"]

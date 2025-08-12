@@ -3,21 +3,21 @@ kind: Deployment
 metadata:
   name: grpc
 spec:
-  replicas: {{ .Values.grpc.replicaCount }}   # Number of backend pod replicas
+  replicas: {{ .Values.grpc.replicaCount }}
   selector:
     matchLabels:
-      app: grpc      # Must match the pod template label
+      app: grpc
   template:
     metadata:
       labels:
-        app: grpc    # Label used for service discovery
+        app: grpc
     spec:
       containers:
       - name: grpc
         image: "{{ .Values.grpc.image.repository }}:{{ .Values.grpc.image.tag }}"
-        imagePullPolicy: IfNotPresent   # Avoids unnecessary pulls if image exists locally
+        imagePullPolicy: IfNotPresent
         ports:
-          - containerPort: {{ .Values.grpc.service.port }}   # Exposes internal container port
+          - containerPort: {{ .Values.grpc.service.port }}
 
         resources:
           {{- toYaml .Values.backend.resources | nindent 12 }}

@@ -1,6 +1,6 @@
 # Boilerplate Webapp
 
-This repository contains a full-stack boilerplate application composed of multiple components designed to work seamlessly together. The project is structured to support modern development workflows, including CI/CD, containerization, and GitOps deployment.
+This repository contains a full-stack boilerplate application composed of multiple components designed to work seamlessly together. The project is structured to support modern development workflows, including CI/CD, containerization, GitOps deployment, and comprehensive testing and security scanning.
 
 ---
 
@@ -17,7 +17,7 @@ This repository contains a full-stack boilerplate application composed of multip
   The React-based frontend application built with TypeScript. Responsible for the user interface and client-side logic.
 
 - **`backend/`**  
-  A Kotlin Spring Boot backend service providing REST APIs for the frontend and other clients.
+  Kotlin Spring Boot backend service providing REST APIs for the frontend and other clients.
 
 - **`grpc/`**  
   gRPC service implementation in Go, facilitating high-performance RPC communication.
@@ -25,8 +25,14 @@ This repository contains a full-stack boilerplate application composed of multip
 - **`docker/`**  
   Dockerfiles for building container images of each component, optimized with multi-stage builds.
 
+- **`tests/`**
+  Contains the `system/` and `e2e/` directories where system and end-to-end tests for the application are built and maintained.
+
+- **`.zap/`**
+  Houses the security rules and configurations used by DAST (Dynamic Application Security Testing) workflows.
+
 - **`.github/workflows/`**  
-  GitHub Actions workflows for CI/CD pipelines, automating build, test, and deployment processes.
+  GitHub Actions workflows covering linting, building, and testing (unit, integration, system, end-to-end), as well as SAST and DAST security scans.
 
 - **`compose/`**  
   Docker Compose configuration for running all services locally in a unified environment.
@@ -44,9 +50,11 @@ This repository contains a full-stack boilerplate application composed of multip
 This boilerplate is designed to accelerate development by providing ready-to-use infrastructure for:
 
 - Building and testing services with automated CI.
-- Containerizing applications using Docker.
-- Deploying applications to Kubernetes using Helm and Argo CD.
-- Maintaining clear separation of concerns between frontend, backend, and service communication.
+- Containerizing applications using Docker with optimized Dockerfiles.
+- Deploying applications to Kubernetes clusters using Helm and Argo CD.
+- Supporting a clear separation of concerns between frontend, backend, and RPC communication layers.
+- Implementing comprehensive testing strategies including unit, integration, system, and end-to-end tests.
+- Integrating security scanning workflows including SAST (Static Application Security Testing) and DAST (Dynamic Application Security Testing)
 
 Feel free to explore each folder for more details, and contribute or customize according to your needs!
 
