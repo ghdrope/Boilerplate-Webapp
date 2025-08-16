@@ -33,10 +33,10 @@ fix: ## Fix formatting issues
 
 # === Docker Compose ===
 
-app-dev: ## Start all services in development environment but as production mode with docker-compose
+compose-dev: ## Start all services in development environment but as production mode with docker-compose
 	docker-compose -f ../compose/docker-compose-dev.yaml up --build
 
-app-dev-down: ## Stop all services in development environment
+compose-dev-down: ## Stop all services in development environment
 	docker-compose -f ../compose/docker-compose-dev.yaml down
 
 # === App lifecycle ===
