@@ -2,4 +2,4 @@ apiVersion: v2
 name: boilerplate-webapp
 description: A helm chart for deploying boilerplate-webapp with frontend, backend, and grpc
 version: 0.1.0  # Helm chart version
-appVersion: "0.0.5" # Application version
+appVersion: "0.0.6-SNAPSHOT" # Application version
