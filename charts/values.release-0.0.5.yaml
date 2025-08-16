@@ -1,0 +1,31 @@
+frontend:
+  image:
+    tag: v0.0.5
+  replicaCount: 1
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+    hosts:
+      - host: frontend.staging.mycompany.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: frontend-staging-tls
+        hosts:
+          - frontend.staging.mycompany.com
+
+backend:
+  image:
+    tag: v0.0.5
+  replicaCount: 1
+  service:
+    type: ClusterIP
+
+grpc:
+  image:
+    tag: v0.0.5
+  replicaCount: 1
+  service:
+    type: ClusterIP

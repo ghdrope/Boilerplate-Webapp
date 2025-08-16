@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "ghdrope.boilerplate"
-version = "0.0.4"
+version = "0.0.5"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 kotlin {
