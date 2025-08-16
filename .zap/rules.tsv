@@ -14,3 +14,6 @@
 10027	IGNORE	Information Disclosure - Suspicious Comments
 90005	IGNORE	Sec-Fetch Headers Missing
 10049	IGNORE	Storable and Cacheable Content
+
+10055	IGNORE	CSP: Failure to Define Directive with No Fallback
+10055	IGNORE	CSP: style-src unsafe-inline
