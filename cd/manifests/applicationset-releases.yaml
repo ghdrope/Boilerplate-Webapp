@@ -23,6 +23,10 @@ spec:
             namespace: boilerplate-webapp-release-0-0-4
             valuesFile: values.release-0.0.4.yaml
 
+          - branch: release-0.0.5
+            namespace: boilerplate-webapp-release-0-0-5
+            valuesFile: values.release-0.0.5.yaml
+
   template:
     metadata:
       name: boilerplate-webapp-{{branch}}
